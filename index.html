@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LineSim | Capacity Planning & Digital Twin Optimization</title>
+  <style>
+    :root {
+      --navy: #0b1220;
+      --navy-2: #111827;
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --cyan: #06b6d4;
+      --green: #16a34a;
+      --amber: #f59e0b;
+      --red: #dc2626;
+      --slate: #475569;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--navy);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 32rem),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page-shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(248, 250, 252, 0.84);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.28);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+      color: var(--slate);
+      font-weight: 650;
+    }
+
+    .nav-links a {
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--blue);
+    }
+
+    .hero {
+      padding: 72px 0 52px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(360px, 0.98fr);
+      gap: 38px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: #1d4ed8;
+      background: rgba(219, 234, 254, 0.76);
+      border: 1px solid rgba(147, 197, 253, 0.8);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 13px;
+      font-weight: 750;
+      margin-bottom: 20px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 999px;
+      box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.16);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.76); opacity: 0.72; }
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 span {
+      display: block;
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #0891b2 100%);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-copy {
+      font-size: 18px;
+      color: var(--slate);
+      max-width: 680px;
+      margin-bottom: 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      padding: 13px 17px;
+      font-weight: 800;
+      font-size: 14px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), #0ea5e9);
+      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.27);
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--navy);
+      border-color: rgba(203, 213, 225, 0.9);
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--slate);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 520px;
+    }
+
+    .hero-card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      overflow: hidden;
+      transform: translateY(0);
+      animation: floatCard 6s ease-in-out infinite;
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .dashboard-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .window-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #cbd5e1;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #166534;
+      background: #dcfce7;
+      padding: 7px 10px;
+      border-radius: 999px;
+    }
+
+    .screen {
+      border-radius: 22px;
+      background: linear-gradient(180deg, #0f172a, #111827);
+      color: white;
+      padding: 20px;
+      min-height: 430px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      top: -90px;
+      right: -80px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.25);
+      filter: blur(12px);
+    }
+
+    .screen-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .mini-kpi {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .mini-kpi small {
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .mini-kpi strong {
+      display: block;
+      font-size: 26px;
+      letter-spacing: -0.04em;
+      margin-top: 4px;
+    }
+
+    .line-map {
+      grid-column: 1 / -1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 22px;
+      padding: 18px;
+      margin-top: 2px;
+    }
+
+    .line-map h3 {
+      font-size: 14px;
+      margin-bottom: 14px;
+      color: #e2e8f0;
+    }
+
+    .station-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .station {
+      min-height: 78px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(15, 23, 42, 0.7);
+      padding: 10px;
+      position: relative;
+    }
+
+    .station::after {
+      content: "";
+      position: absolute;
+      right: -12px;
+      top: 35px;
+      width: 14px;
+      height: 2px;
+      background: rgba(148, 163, 184, 0.8);
+    }
+
+    .station:last-child::after {
+      display: none;
+    }
+
+    .station-label {
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-bottom: 9px;
+      font-weight: 700;
+    }
+
+    .capacity-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 9px;
+    }
+
+    .capacity-bar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+      width: var(--w);
+      animation: fillBar 1.5s ease both;
+    }
+
+    .station.bottleneck .capacity-bar span {
+      background: linear-gradient(90deg, #f97316, #ef4444);
+    }
+
+    .station strong {
+      font-size: 12px;
+    }
+
+    @keyframes fillBar {
+      from { width: 0; }
+      to { width: var(--w); }
+    }
+
+    .floating-note {
+      position: absolute;
+      left: -28px;
+      bottom: 72px;
+      max-width: 220px;
+      background: white;
+      color: var(--navy);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14);
+      animation: floatNote 5.5s ease-in-out infinite;
+    }
+
+    @keyframes floatNote {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+
+    .floating-note span {
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 800;
+      color: #9a3412;
+      background: #ffedd5;
+      border-radius: 999px;
+      padding: 5px 9px;
+      margin-bottom: 9px;
+    }
+
+    .floating-note p {
+      color: var(--slate);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .digital-twin-stage {
+      position: relative;
+      min-height: 430px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.25), transparent 16rem),
+        radial-gradient(circle at 90% 12%, rgba(6, 182, 212, 0.18), transparent 14rem),
+        linear-gradient(180deg, #0f172a, #111827 52%, #020617);
+      overflow: hidden;
+      padding: 18px;
+      isolation: isolate;
+    }
+
+    .digital-twin-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.88), transparent 92%);
+      animation: gridDrift 18s linear infinite;
+      z-index: -2;
+    }
+
+    .digital-twin-stage::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(from 90deg, transparent, rgba(56, 189, 248, 0.12), transparent, rgba(37, 99, 235, 0.12), transparent);
+      animation: radarSweep 12s linear infinite;
+      z-index: -3;
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 34px 68px, 68px 34px; }
+    }
+
+    @keyframes radarSweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .live-hud {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      position: relative;
+      z-index: 3;
+      margin-bottom: 16px;
+    }
+
+    .hud-card {
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      background: rgba(15, 23, 42, 0.72);
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .hud-card small {
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hud-card strong {
+      display: block;
+      color: white;
+      font-size: 22px;
+      line-height: 1.1;
+      margin-top: 4px;
+      letter-spacing: -0.04em;
+    }
+
+    .hud-card span {
+      display: inline-flex;
+      margin-top: 6px;
+      color: #67e8f9;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .twin-floor {
+      position: relative;
+      height: 286px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 22px;
+      background:
+        linear-gradient(90deg, rgba(15, 23, 42, 0.72), rgba(30, 41, 59, 0.38)),
+        radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.22), transparent 23rem);
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .twin-floor .axis-line {
+      position: absolute;
+      left: 42px;
+      right: 42px;
+      top: 142px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.22), rgba(34, 211, 238, 0.7), rgba(59, 130, 246, 0.22));
+      box-shadow: 0 0 28px rgba(6, 182, 212, 0.38);
+    }
+
+    .twin-floor .axis-line::before,
+    .twin-floor .axis-line::after {
+      content: "";
+      position: absolute;
+      inset: -12px 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.34), transparent);
+      transform: translateX(-90%);
+      animation: conveyorLight 2.4s linear infinite;
+    }
+
+    .twin-floor .axis-line::after {
+      animation-delay: 1.2s;
+    }
+
+    @keyframes conveyorLight {
+      to { transform: translateX(90%); }
+    }
+
+    .twin-station {
+      position: absolute;
+      width: 92px;
+      height: 92px;
+      border-radius: 22px;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      background: rgba(15, 23, 42, 0.86);
+      box-shadow: 0 18px 36px rgba(2, 6, 23, 0.28), inset 0 1px 0 rgba(255,255,255,0.07);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: white;
+      animation: stationBreath 3.8s ease-in-out infinite;
+    }
+
+    .twin-station::before {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 28px;
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      opacity: 0;
+      animation: sensorPing 2.4s ease-out infinite;
+    }
+
+    .twin-station::after {
+      content: attr(data-load);
+      position: absolute;
+      right: -8px;
+      top: -10px;
+      border-radius: 999px;
+      padding: 5px 7px;
+      font-size: 10px;
+      font-weight: 950;
+      color: #ecfeff;
+      background: rgba(8, 145, 178, 0.9);
+      border: 1px solid rgba(103, 232, 249, 0.45);
+      box-shadow: 0 0 18px rgba(6, 182, 212, 0.28);
+    }
+
+    .twin-station.bottleneck-live::after {
+      color: #fff7ed;
+      background: rgba(234, 88, 12, 0.95);
+      border-color: rgba(251, 146, 60, 0.6);
+      box-shadow: 0 0 26px rgba(249, 115, 22, 0.45);
+    }
+
+    .twin-station strong {
+      display: block;
+      font-size: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .twin-station span {
+      display: block;
+      margin-top: 3px;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .s1 { left: 24px; top: 94px; animation-delay: 0s; }
+    .s2 { left: 25%; top: 54px; animation-delay: 0.35s; }
+    .s3 { left: 47%; top: 132px; animation-delay: 0.7s; }
+    .s4 { right: 25%; top: 54px; animation-delay: 1.05s; }
+    .s5 { right: 24px; top: 94px; animation-delay: 1.4s; }
+
+    @keyframes stationBreath {
+      0%, 100% { transform: translateY(0) scale(1); border-color: rgba(148, 163, 184, 0.24); }
+      50% { transform: translateY(-3px) scale(1.015); border-color: rgba(34, 211, 238, 0.45); }
+    }
+
+    @keyframes sensorPing {
+      0% { transform: scale(0.92); opacity: 0.7; }
+      100% { transform: scale(1.18); opacity: 0; }
+    }
+
+    .digital-part {
+      position: absolute;
+      left: 42px;
+      top: 134px;
+      width: 22px;
+      height: 22px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f8fafc, #38bdf8);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.75);
+      animation: partTravel 5.2s linear infinite;
+      z-index: 4;
+    }
+
+    .digital-part:nth-of-type(2) { animation-delay: -1.3s; opacity: 0.85; }
+    .digital-part:nth-of-type(3) { animation-delay: -2.6s; opacity: 0.7; }
+    .digital-part:nth-of-type(4) { animation-delay: -3.9s; opacity: 0.55; }
+
+    @keyframes partTravel {
+      0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; }
+      8% { opacity: 1; }
+      25% { transform: translateX(25vw) translateY(-52px) rotate(90deg); }
+      50% { transform: translateX(42vw) translateY(36px) rotate(180deg); }
+      75% { transform: translateX(58vw) translateY(-52px) rotate(270deg); }
+      94% { opacity: 1; }
+      100% { transform: translateX(71vw) translateY(0) rotate(360deg); opacity: 0; }
+    }
+
+    .scanner-beam {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 70px;
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.24), transparent);
+      filter: blur(1px);
+      animation: scanBeam 3.6s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes scanBeam {
+      0%, 100% { transform: translateX(-90px); opacity: 0; }
+      12%, 84% { opacity: 1; }
+      50% { transform: translateX(620px); opacity: 0.95; }
+    }
+
+    .robot-arm {
+      position: absolute;
+      width: 78px;
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #64748b, #e2e8f0);
+      transform-origin: 9px 50%;
+      box-shadow: 0 8px 22px rgba(2, 6, 23, 0.28);
+      z-index: 5;
+    }
+
+    .robot-arm::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      top: -8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 4px solid #38bdf8;
+    }
+
+    .robot-arm::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: -7px;
+      width: 18px;
+      height: 28px;
+      border-radius: 8px;
+      background: #f8fafc;
+      box-shadow: 0 0 18px rgba(248, 250, 252, 0.45);
+    }
+
+    .arm-one {
+      left: 29%;
+      top: 158px;
+      animation: robotWorkOne 2.8s ease-in-out infinite;
+    }
+
+    .arm-two {
+      right: 27%;
+      top: 96px;
+      animation: robotWorkTwo 3.1s ease-in-out infinite;
+    }
+
+    @keyframes robotWorkOne {
+      0%, 100% { transform: rotate(-16deg); }
+      42% { transform: rotate(31deg); }
+      64% { transform: rotate(8deg); }
+    }
+
+    @keyframes robotWorkTwo {
+      0%, 100% { transform: rotate(20deg); }
+      50% { transform: rotate(-32deg); }
+    }
+
+    .data-link {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.9), transparent);
+      transform-origin: left center;
+      opacity: 0.72;
+      animation: dataPulse 1.8s linear infinite;
+      z-index: 0;
+    }
+
+    .dl1 { left: 112px; top: 122px; width: 142px; transform: rotate(-15deg); }
+    .dl2 { left: 300px; top: 128px; width: 135px; transform: rotate(27deg); animation-delay: 0.35s; }
+    .dl3 { left: 456px; top: 183px; width: 138px; transform: rotate(-27deg); animation-delay: 0.7s; }
+    .dl4 { right: 112px; top: 122px; width: 142px; transform: rotate(15deg); animation-delay: 1.05s; }
+
+    @keyframes dataPulse {
+      0% { opacity: 0.16; filter: blur(0); }
+      45% { opacity: 1; filter: blur(1px); }
+      100% { opacity: 0.16; filter: blur(0); }
+    }
+
+    .event-console {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 14px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 10px;
+      z-index: 6;
+    }
+
+    .console-line,
+    .throughput-wave {
+      min-height: 48px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      background: rgba(2, 6, 23, 0.74);
+      border-radius: 16px;
+      padding: 10px 12px;
+      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: 800;
+      overflow: hidden;
+    }
+
+    .console-line span {
+      color: #67e8f9;
+    }
+
+    .console-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 13px;
+      background: #22d3ee;
+      margin-left: 5px;
+      vertical-align: -2px;
+      animation: cursorBlink 0.9s steps(1) infinite;
+    }
+
+    @keyframes cursorBlink {
+      50% { opacity: 0; }
+    }
+
+    .throughput-wave {
+      display: flex;
+      align-items: end;
+      gap: 5px;
+    }
+
+    .throughput-wave i {
+      display: block;
+      width: 8px;
+      border-radius: 999px 999px 0 0;
+      background: linear-gradient(180deg, #22d3ee, #2563eb);
+      height: var(--h);
+      animation: waveRise 1.2s ease-in-out infinite;
+      animation-delay: var(--d);
+    }
+
+    @keyframes waveRise {
+      0%, 100% { transform: scaleY(0.72); opacity: 0.72; }
+      50% { transform: scaleY(1.14); opacity: 1; }
+    }
+
+    @media (max-width: 680px) {
+      .live-hud,
+      .event-console {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .twin-floor {
+        height: 420px;
+      }
+
+      .twin-floor .axis-line {
+        top: 210px;
+        left: 30px;
+        right: 30px;
+      }
+
+      .twin-station {
+        width: 82px;
+        height: 82px;
+      }
+
+      .s1 { left: 20px; top: 62px; }
+      .s2 { left: calc(50% - 41px); top: 42px; }
+      .s3 { left: 20px; top: 198px; }
+      .s4 { right: 20px; top: 198px; }
+      .s5 { left: calc(50% - 41px); top: 318px; }
+
+      .robot-arm,
+      .data-link {
+        display: none;
+      }
+
+      @keyframes partTravel {
+        0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; }
+        12% { opacity: 1; }
+        35% { transform: translateX(42vw) translateY(-130px) rotate(120deg); }
+        60% { transform: translateX(8vw) translateY(58px) rotate(240deg); }
+        82% { transform: translateX(55vw) translateY(58px) rotate(320deg); opacity: 1; }
+        100% { transform: translateX(35vw) translateY(190px) rotate(360deg); opacity: 0; }
+      }
+    }
+
+    /* Cleaner Digital Twin Override */
+    .hero-card {
+      overflow: visible;
+    }
+
+    .digital-twin-stage {
+      min-height: 430px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(37, 99, 235, 0.22), transparent 18rem),
+        linear-gradient(180deg, #0f172a 0%, #0b1220 100%);
+    }
+
+    .digital-twin-stage::after {
+      opacity: 0.28;
+    }
+
+    .floating-note {
+      display: none;
+    }
+
+    .clean-twin-header {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .clean-twin-title h3 {
+      color: white;
+      font-size: 18px;
+      letter-spacing: -0.025em;
+      margin-bottom: 4px;
+    }
+
+    .clean-twin-title p {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .sync-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #67e8f9;
+      background: rgba(8, 47, 73, 0.52);
+      border: 1px solid rgba(103, 232, 249, 0.22);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .sync-chip::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.12);
+      animation: pulse 1.8s infinite;
+    }
+
+    .clean-live-hud {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .clean-stat {
+      min-height: 86px;
+      border-radius: 18px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    .clean-stat small {
+      display: block;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .clean-stat strong {
+      display: block;
+      color: white;
+      font-size: 25px;
+      line-height: 1;
+      letter-spacing: -0.045em;
+      margin-bottom: 7px;
+    }
+
+    .clean-stat span {
+      color: #67e8f9;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .clean-twin-floor {
+      position: relative;
+      z-index: 4;
+      height: 250px;
+      border-radius: 22px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.45), rgba(2, 6, 23, 0.72)),
+        linear-gradient(90deg, rgba(37, 99, 235, 0.10), rgba(6, 182, 212, 0.08));
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .clean-twin-floor::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+      background-size: 42px 42px;
+      opacity: 0.7;
+    }
+
+    .clean-conveyor {
+      position: absolute;
+      left: 50px;
+      right: 50px;
+      top: 122px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(14, 165, 233, 0.14);
+      border: 1px solid rgba(103, 232, 249, 0.22);
+      box-shadow: 0 0 24px rgba(14, 165, 233, 0.16);
+    }
+
+    .clean-conveyor::after {
+      content: "";
+      position: absolute;
+      top: -9px;
+      bottom: -9px;
+      width: 120px;
+      background: linear-gradient(90deg, transparent, rgba(103, 232, 249, 0.24), transparent);
+      animation: cleanScan 3.2s linear infinite;
+    }
+
+    @keyframes cleanScan {
+      from { transform: translateX(-120px); }
+      to { transform: translateX(560px); }
+    }
+
+    .clean-station-row {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      top: 62px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      z-index: 4;
+    }
+
+    .clean-station {
+      position: relative;
+      min-height: 112px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      padding: 14px 12px;
+      text-align: center;
+      box-shadow: 0 16px 34px rgba(2, 6, 23, 0.24);
+    }
+
+    .clean-station.active {
+      border-color: rgba(251, 146, 60, 0.48);
+      box-shadow: 0 18px 42px rgba(234, 88, 12, 0.16);
+    }
+
+    .clean-station::before {
+      content: attr(data-load);
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 950;
+      background: rgba(8, 145, 178, 0.92);
+      border: 1px solid rgba(103, 232, 249, 0.35);
+    }
+
+    .clean-station.active::before {
+      background: rgba(234, 88, 12, 0.95);
+      border-color: rgba(253, 186, 116, 0.52);
+    }
+
+    .station-dot {
+      width: 34px;
+      height: 34px;
+      margin: 8px auto 10px;
+      border-radius: 13px;
+      background: rgba(14, 165, 233, 0.13);
+      border: 2px solid rgba(103, 232, 249, 0.8);
+      box-shadow: 0 0 22px rgba(14, 165, 233, 0.16);
+      animation: cleanPing 2.8s ease-in-out infinite;
+    }
+
+    .clean-station.active .station-dot {
+      background: rgba(249, 115, 22, 0.12);
+      border-color: rgba(251, 146, 60, 0.9);
+      box-shadow: 0 0 24px rgba(249, 115, 22, 0.22);
+    }
+
+    @keyframes cleanPing {
+      0%, 100% { transform: scale(1); opacity: 0.82; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    .clean-station strong {
+      display: block;
+      color: white;
+      font-size: 12px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .clean-station span:not(.station-dot) {
+      display: block;
+      margin-top: 4px;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .clean-part {
+      position: absolute;
+      top: 116px;
+      left: 52px;
+      width: 20px;
+      height: 20px;
+      z-index: 6;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #f8fafc, #38bdf8);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.62);
+      animation: cleanPartMove 5s linear infinite;
+    }
+
+    .clean-part.part-two {
+      animation-delay: -2.5s;
+      opacity: 0.72;
+    }
+
+    @keyframes cleanPartMove {
+      0% { transform: translateX(0) rotate(0deg); opacity: 0; }
+      8% { opacity: 1; }
+      92% { opacity: 1; }
+      100% { transform: translateX(520px) rotate(360deg); opacity: 0; }
+    }
+
+    .clean-console {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 18px;
+      z-index: 6;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.74);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      padding: 11px 13px;
+    }
+
+    .clean-console p {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .clean-console p span {
+      color: #67e8f9;
+    }
+
+    .mini-wave {
+      display: flex;
+      align-items: end;
+      gap: 4px;
+      height: 28px;
+      min-width: 74px;
+    }
+
+    .mini-wave i {
+      display: block;
+      width: 6px;
+      height: var(--h);
+      border-radius: 999px 999px 0 0;
+      background: linear-gradient(180deg, #22d3ee, #2563eb);
+      animation: waveRise 1.2s ease-in-out infinite;
+      animation-delay: var(--d);
+    }
+
+    @media (max-width: 680px) {
+      .clean-live-hud {
+        grid-template-columns: 1fr;
+      }
+
+      .clean-twin-header {
+        flex-direction: column;
+      }
+
+      .clean-twin-floor {
+        height: 520px;
+      }
+
+      .clean-station-row {
+        grid-template-columns: 1fr;
+        top: 36px;
+        left: 30px;
+        right: 30px;
+      }
+
+      .clean-station {
+        min-height: 72px;
+        display: grid;
+        grid-template-columns: 46px 1fr;
+        align-items: center;
+        text-align: left;
+      }
+
+      .station-dot {
+        margin: 0;
+      }
+
+      .clean-conveyor,
+      .clean-part {
+        display: none;
+      }
+
+      .clean-console {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .detail-diagram-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .detail-diagram-card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      border-radius: 28px;
+      box-shadow: 0 18px 54px rgba(15, 23, 42, 0.1);
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .diagram-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--slate);
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 10px;
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .legend-dot.orange { background: var(--amber); }
+    .legend-dot.green { background: var(--green); }
+    .legend-dot.cyan { background: var(--cyan); }
+
+    .detail-svg-shell {
+      border-radius: 22px;
+      border: 1px solid #dbe4ef;
+      background: linear-gradient(180deg, #f8fafc, #eef2ff);
+      overflow: hidden;
+    }
+
+    .detail-svg-shell svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .animated-flow-line {
+      stroke-dasharray: 10 12;
+      animation: dashFlow 1.4s linear infinite;
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -22; }
+    }
+
+    .detail-node {
+      filter: drop-shadow(0 12px 16px rgba(15, 23, 42, 0.1));
+      transition: transform 0.25s ease;
+    }
+
+    .detail-node:hover {
+      transform: translateY(-3px);
+    }
+
+    .signal-ring {
+      transform-origin: center;
+      animation: ringPulse 2.2s ease-out infinite;
+    }
+
+    @keyframes ringPulse {
+      0% { transform: scale(0.88); opacity: 0.9; }
+      100% { transform: scale(1.28); opacity: 0; }
+    }
+
+    .detail-side-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .detail-side-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.07);
+    }
+
+    .detail-side-card h3 {
+      font-size: 18px;
+      letter-spacing: -0.025em;
+      margin-bottom: 8px;
+    }
+
+    .detail-side-card p {
+      color: var(--slate);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .detail-mini-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .detail-mini-list div {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: var(--slate);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .detail-mini-list span {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 980px) {
+      .detail-diagram-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section {
+      padding: 54px 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .section-kicker {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+    }
+
+    .section h2 {
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+      max-width: 780px;
+    }
+
+    .section-lead {
+      color: var(--slate);
+      max-width: 540px;
+      font-size: 16px;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .metric-card,
+    .content-card,
+    .scenario-panel,
+    .diagram-card {
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      border-radius: var(--radius);
+      box-shadow: 0 14px 42px rgba(15, 23, 42, 0.08);
+    }
+
+    .metric-card {
+      padding: 22px;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.12);
+    }
+
+    .metric-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      font-size: 20px;
+    }
+
+    .metric-value {
+      font-size: 36px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.055em;
+    }
+
+    .metric-label {
+      margin-top: 8px;
+      color: var(--slate);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .content-card {
+      padding: 28px;
+    }
+
+    .content-card h3 {
+      font-size: 24px;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+      margin-bottom: 14px;
+    }
+
+    .content-card p {
+      color: var(--slate);
+      margin-bottom: 18px;
+    }
+
+    .clean-list {
+      display: grid;
+      gap: 12px;
+      list-style: none;
+    }
+
+    .clean-list li {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 11px;
+      color: var(--slate);
+      font-weight: 620;
+    }
+
+    .check {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      background: #dcfce7;
+      color: #166534;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .diagram-card {
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .diagram-caption {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+
+    .diagram-caption h3 {
+      font-size: 19px;
+      letter-spacing: -0.025em;
+    }
+
+    .diagram-caption span {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 750;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
+
+    .svg-wrap {
+      width: 100%;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #f8fafc, #eef2ff);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+
+    .svg-wrap svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .flow-node {
+      filter: drop-shadow(0 14px 14px rgba(15, 23, 42, 0.08));
+    }
+
+    .scenario-panel {
+      padding: 26px;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .controls {
+      display: grid;
+      gap: 18px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--navy);
+      font-weight: 800;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--blue);
+    }
+
+    .scenario-result {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .result-box {
+      border-radius: 20px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      padding: 18px;
+    }
+
+    .result-box small {
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .result-box strong {
+      display: block;
+      font-size: 30px;
+      letter-spacing: -0.045em;
+      margin-top: 4px;
+    }
+
+    .bar-chart {
+      margin-top: 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 60px;
+      gap: 12px;
+      align-items: center;
+      color: var(--slate);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .bar-bg {
+      height: 13px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: var(--value);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      transition: width 0.45s ease;
+    }
+
+    .bar-fill.warning {
+      background: linear-gradient(90deg, var(--amber), #ef4444);
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .method-card {
+      position: relative;
+      padding: 22px;
+      min-height: 230px;
+      overflow: hidden;
+    }
+
+    .method-card::before {
+      content: attr(data-step);
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 52px;
+      font-weight: 950;
+      letter-spacing: -0.08em;
+      color: rgba(37, 99, 235, 0.09);
+    }
+
+    .method-card h3 {
+      font-size: 19px;
+      margin-bottom: 10px;
+    }
+
+    .method-card p {
+      color: var(--slate);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .insights {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .insight-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .insight-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 20px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+    }
+
+    .insight-number {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--navy);
+      border-radius: 15px;
+      font-weight: 900;
+    }
+
+    .insight-item h4 {
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+
+    .insight-item p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--slate);
+    }
+
+    .skills-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .skill-pill {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      color: var(--slate);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .footer-cta {
+      margin: 60px 0 70px;
+      padding: 34px;
+      border-radius: 32px;
+      color: white;
+      background:
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.4), transparent 22rem),
+        linear-gradient(135deg, #0f172a, #1e3a8a);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .footer-cta h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.055em;
+      line-height: 1.05;
+      margin-bottom: 10px;
+    }
+
+    .footer-cta p {
+      color: #cbd5e1;
+      max-width: 720px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .two-col,
+      .scenario-grid,
+      .insights,
+      .footer-cta {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        min-height: auto;
+      }
+
+      .floating-note {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        margin-top: 16px;
+        max-width: none;
+      }
+
+      .metrics-grid,
+      .method-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page-shell {
+        width: min(100% - 26px, 1180px);
+      }
+
+      .nav-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px 0;
+      }
+
+      .nav-links {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 3px;
+      }
+
+      .hero {
+        padding-top: 44px;
+      }
+
+      .metrics-grid,
+      .method-grid,
+      .scenario-result {
+        grid-template-columns: 1fr;
+      }
+
+      .station-row {
+        grid-template-columns: 1fr;
+      }
+
+      .station::after {
+        display: none;
+      }
+
+      .section-header {
+        display: block;
+      }
+
+      .section-lead {
+        margin-top: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="page-shell nav-inner">
+      <a class="brand" href="#top" aria-label="LineSim project home">
+        <span class="brand-mark">L</span>
+        <span>LineSim</span>
+      </a>
+      <nav class="nav-links" aria-label="Project navigation">
+        <a href="#overview">Overview</a>
+        <a href="#model">Digital Twin</a>
+        <a href="#scenario">Scenario Testing</a>
+        <a href="#detail-diagram">Detailed Diagram</a>
+        <a href="#insights">Insights</a>
+        <a href="#skills">Skills</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="page-shell hero-grid">
+        <div class="reveal">
+          <div class="eyebrow"><span class="pulse-dot"></span> Capacity Planning & Simulation Project</div>
+          <h1>LineSim: <span>Digital Twin Optimization</span></h1>
+          <p class="hero-copy">
+            A production-line simulation project built to evaluate bottlenecks, labor utilization, workstation capacity, and staffing scenarios before making operational changes on the floor.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#scenario">View Scenario Model →</a>
+            <a class="button button-secondary" href="#insights">See Key Findings</a>
+          </div>
+          <div class="hero-tags">
+            <span class="tag">Discrete Event Simulation</span>
+            <span class="tag">Line Balancing</span>
+            <span class="tag">Time Study</span>
+            <span class="tag">Capacity Analysis</span>
+            <span class="tag">Resource Planning</span>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal">
+          <div class="hero-card">
+            <div class="dashboard-top">
+              <div class="window-dots"><span></span><span></span><span></span></div>
+              <div class="status-pill">● Model Running</div>
+            </div>
+            <div class="screen digital-twin-stage">
+              <div class="clean-twin-header">
+                <div class="clean-twin-title">
+                  <h3>Live Digital Twin View</h3>
+                  <p>Workstation capacity, WIP movement, and bottleneck status in one clean model.</p>
+                </div>
+                <div class="sync-chip">Simulation Sync Active</div>
+              </div>
+
+              <div class="clean-live-hud">
+                <div class="clean-stat">
+                  <small>Throughput</small>
+                  <strong id="liveThroughput">118/hr</strong>
+                  <span>+14% projected gain</span>
+                </div>
+                <div class="clean-stat">
+                  <small>Labor Load</small>
+                  <strong id="liveLabor">84%</strong>
+                  <span>balanced allocation</span>
+                </div>
+                <div class="clean-stat">
+                  <small>Queue Risk</small>
+                  <strong id="liveQueue">Low</strong>
+                  <span>controlled WIP</span>
+                </div>
+              </div>
+
+              <div class="clean-twin-floor" aria-label="Clean animated digital twin production line">
+                <div class="clean-conveyor"></div>
+
+                <div class="clean-station-row">
+                  <div class="clean-station" data-load="63%">
+                    <span class="station-dot"></span>
+                    <div><strong>Prep</strong><span>S1</span></div>
+                  </div>
+                  <div class="clean-station active" data-load="92%">
+                    <span class="station-dot"></span>
+                    <div><strong>Assembly</strong><span>Bottleneck</span></div>
+                  </div>
+                  <div class="clean-station" data-load="78%">
+                    <span class="station-dot"></span>
+                    <div><strong>Testing</strong><span>S3</span></div>
+                  </div>
+                  <div class="clean-station" data-load="70%">
+                    <span class="station-dot"></span>
+                    <div><strong>Pack</strong><span>S4</span></div>
+                  </div>
+                  <div class="clean-station" data-load="58%">
+                    <span class="station-dot"></span>
+                    <div><strong>Ship</strong><span>S5</span></div>
+                  </div>
+                </div>
+
+                <div class="clean-part"></div>
+                <div class="clean-part part-two"></div>
+
+                <div class="clean-console">
+                  <p><span id="eventText">Simulation update:</span> assembly remains the current constraint.</p>
+                  <div class="mini-wave" aria-label="Live throughput signal">
+                    <i style="--h: 13px; --d: 0s"></i>
+                    <i style="--h: 22px; --d: .12s"></i>
+                    <i style="--h: 16px; --d: .24s"></i>
+                    <i style="--h: 26px; --d: .36s"></i>
+                    <i style="--h: 19px; --d: .48s"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="floating-note">
+            <span>Bottleneck Flag</span>
+            <p>Assembly showed the highest utilization and became the main constraint during high-demand runs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="overview">
+      <div class="page-shell">
+        <div class="section-header reveal">
+          <div>
+            <div class="section-kicker">Project Impact</div>
+            <h2>Simulation-backed decisions for capacity, staffing, and flow improvement.</h2>
+          </div>
+          <p class="section-lead">
+            The project converted time-study observations into a working simulation model, making it possible to test production changes before implementation.
+          </p>
+        </div>
+
+        <div class="metrics-grid reveal">
+          <article class="metric-card">
+            <div class="metric-icon">↗</div>
+            <div class="metric-value counter" data-target="14">0%</div>
+            <div class="metric-label">Projected throughput increase from improved line balance and staffing scenarios.</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-icon">⏱</div>
+            <div class="metric-value counter" data-target="10">0%</div>
+            <div class="metric-label">Projected labor efficiency gain through better resource allocation.</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-icon">⚙</div>
+            <div class="metric-value">5</div>
+            <div class="metric-label">Workstations modeled across the production flow for utilization comparison.</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-icon">▦</div>
+            <div class="metric-value">8</div>
+            <div class="metric-label">Scenario runs tested to compare labor plans, bottlenecks, and capacity limits.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="model">
+      <div class="page-shell two-col">
+        <article class="content-card reveal">
+          <div class="section-kicker">Problem Framing</div>
+          <h3>Capacity issues were not caused by one factor alone.</h3>
+          <p>
+            The line needed a clearer way to see how cycle time variation, workstation load, and labor assignment affected daily output. Instead of relying only on averages, the model compared how the system behaved under different production conditions.
+          </p>
+          <ul class="clean-list">
+            <li><span class="check">✓</span><span>Mapped the end-to-end production sequence and defined workstation-level inputs.</span></li>
+            <li><span class="check">✓</span><span>Used time study data to estimate cycle times, utilization, and waiting points.</span></li>
+            <li><span class="check">✓</span><span>Tested alternative staffing plans to reduce overload at high-demand steps.</span></li>
+            <li><span class="check">✓</span><span>Compared baseline and improved scenarios using throughput and labor efficiency.</span></li>
+          </ul>
+        </article>
+
+        <article class="diagram-card reveal">
+          <div class="diagram-caption">
+            <h3>Digital Twin Model Structure</h3>
+            <span>Process Flow Diagram</span>
+          </div>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 920 430" role="img" aria-label="Digital twin process flow diagram">
+              <defs>
+                <linearGradient id="nodeGrad" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#2563eb" />
+                  <stop offset="100%" stop-color="#06b6d4" />
+                </linearGradient>
+                <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,8 L10,4 z" fill="#64748b" />
+                </marker>
+              </defs>
+
+              <rect x="0" y="0" width="920" height="430" fill="#f8fafc" />
+              <path d="M85 210 C 220 70, 350 350, 492 207 S 725 115, 836 210" fill="none" stroke="#dbeafe" stroke-width="80" stroke-linecap="round" opacity="0.78" />
+
+              <g class="flow-node">
+                <rect x="48" y="156" width="134" height="92" rx="20" fill="white" stroke="#dbe4ef" />
+                <circle cx="86" cy="202" r="21" fill="#eff6ff" />
+                <text x="86" y="209" text-anchor="middle" font-size="18" font-weight="800" fill="#2563eb">1</text>
+                <text x="116" y="194" font-size="16" font-weight="800" fill="#0f172a">Input</text>
+                <text x="116" y="216" font-size="12" fill="#64748b">Time study data</text>
+              </g>
+
+              <line x1="190" y1="202" x2="255" y2="202" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)" />
+
+              <g class="flow-node">
+                <rect x="266" y="96" width="150" height="92" rx="20" fill="white" stroke="#dbe4ef" />
+                <circle cx="304" cy="142" r="21" fill="#eff6ff" />
+                <text x="304" y="149" text-anchor="middle" font-size="18" font-weight="800" fill="#2563eb">2</text>
+                <text x="336" y="134" font-size="16" font-weight="800" fill="#0f172a">Model</text>
+                <text x="336" y="156" font-size="12" fill="#64748b">Stations & queues</text>
+              </g>
+
+              <line x1="420" y1="142" x2="493" y2="190" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)" />
+
+              <g class="flow-node">
+                <rect x="506" y="156" width="156" height="92" rx="20" fill="url(#nodeGrad)" />
+                <circle cx="545" cy="202" r="21" fill="rgba(255,255,255,0.22)" />
+                <text x="545" y="209" text-anchor="middle" font-size="18" font-weight="800" fill="white">3</text>
+                <text x="579" y="194" font-size="16" font-weight="800" fill="white">Simulate</text>
+                <text x="579" y="216" font-size="12" fill="#dbeafe">Scenario testing</text>
+              </g>
+
+              <line x1="670" y1="202" x2="735" y2="202" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)" />
+
+              <g class="flow-node">
+                <rect x="746" y="156" width="134" height="92" rx="20" fill="white" stroke="#dbe4ef" />
+                <circle cx="784" cy="202" r="21" fill="#ecfdf5" />
+                <text x="784" y="209" text-anchor="middle" font-size="18" font-weight="800" fill="#16a34a">4</text>
+                <text x="814" y="194" font-size="16" font-weight="800" fill="#0f172a">Optimize</text>
+                <text x="814" y="216" font-size="12" fill="#64748b">Balance resources</text>
+              </g>
+
+              <g opacity="0.92">
+                <rect x="270" y="278" width="378" height="88" rx="22" fill="white" stroke="#dbe4ef" />
+                <text x="300" y="313" font-size="15" font-weight="850" fill="#0f172a">Outputs Compared</text>
+                <text x="300" y="340" font-size="13" fill="#64748b">Throughput • Labor utilization • Queue time • Station capacity • Bottleneck risk</text>
+              </g>
+            </svg>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="scenario">
+      <div class="page-shell">
+        <div class="section-header reveal">
+          <div>
+            <div class="section-kicker">Interactive Scenario View</div>
+            <h2>Test how staffing and demand pressure affect line performance.</h2>
+          </div>
+          <p class="section-lead">
+            Use the controls below to show how the project compared operating scenarios. The values are a portfolio demonstration of the model logic.
+          </p>
+        </div>
+
+        <div class="scenario-panel reveal">
+          <div class="scenario-grid">
+            <div class="controls">
+              <div class="control-group">
+                <label for="staffing">Staffing Level <span id="staffingValue">6 operators</span></label>
+                <input id="staffing" type="range" min="4" max="8" value="6" />
+              </div>
+              <div class="control-group">
+                <label for="demand">Demand Pressure <span id="demandValue">80%</span></label>
+                <input id="demand" type="range" min="60" max="110" value="80" />
+              </div>
+              <div class="control-group">
+                <label for="balance">Line Balance Improvement <span id="balanceValue">12%</span></label>
+                <input id="balance" type="range" min="0" max="20" value="12" />
+              </div>
+            </div>
+
+            <div>
+              <div class="scenario-result">
+                <div class="result-box">
+                  <small>Projected Throughput</small>
+                  <strong id="throughputResult">+14%</strong>
+                </div>
+                <div class="result-box">
+                  <small>Labor Efficiency</small>
+                  <strong id="laborResult">+10%</strong>
+                </div>
+                <div class="result-box">
+                  <small>Bottleneck Load</small>
+                  <strong id="bottleneckResult">82%</strong>
+                </div>
+              </div>
+
+              <div class="bar-chart" aria-label="Workstation utilization chart">
+                <div class="chart-row">
+                  <span>Prep</span>
+                  <div class="bar-bg"><div class="bar-fill" id="barPrep" style="--value: 62%"></div></div>
+                  <span id="prepText">62%</span>
+                </div>
+                <div class="chart-row">
+                  <span>Assembly</span>
+                  <div class="bar-bg"><div class="bar-fill warning" id="barAssembly" style="--value: 82%"></div></div>
+                  <span id="assemblyText">82%</span>
+                </div>
+                <div class="chart-row">
+                  <span>Testing</span>
+                  <div class="bar-bg"><div class="bar-fill" id="barTesting" style="--value: 74%"></div></div>
+                  <span id="testingText">74%</span>
+                </div>
+                <div class="chart-row">
+                  <span>Packaging</span>
+                  <div class="bar-bg"><div class="bar-fill" id="barPackaging" style="--value: 66%"></div></div>
+                  <span id="packagingText">66%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="detail-diagram">
+      <div class="page-shell">
+        <div class="section-header reveal">
+          <div>
+            <div class="section-kicker">Detailed Digital Twin Diagram</div>
+            <h2>How the simulation connects inputs, constraints, and improvement decisions.</h2>
+          </div>
+          <p class="section-lead">
+            This diagram shows the complete logic behind the model: time study inputs feed the simulation engine, the line model identifies the constraint, and scenario outputs support staffing and capacity decisions.
+          </p>
+        </div>
+
+        <div class="detail-diagram-grid">
+          <article class="detail-diagram-card reveal">
+            <div class="diagram-caption">
+              <h3>LineSim System Architecture</h3>
+              <span>Input → Model → Scenario → Decision</span>
+            </div>
+            <div class="detail-svg-shell">
+              <svg viewBox="0 0 1050 650" role="img" aria-label="Detailed digital twin simulation architecture diagram">
+                <defs>
+                  <linearGradient id="detailBlue" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#2563eb" />
+                    <stop offset="100%" stop-color="#06b6d4" />
+                  </linearGradient>
+                  <linearGradient id="detailOrange" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#f59e0b" />
+                    <stop offset="100%" stop-color="#ef4444" />
+                  </linearGradient>
+                  <marker id="detailArrow" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,8 L10,4 z" fill="#64748b" />
+                  </marker>
+                </defs>
+
+                <rect width="1050" height="650" fill="#f8fafc" />
+                <path d="M90 117 H960" stroke="#e2e8f0" stroke-width="1" />
+                <path d="M90 318 H960" stroke="#e2e8f0" stroke-width="1" />
+                <path d="M90 520 H960" stroke="#e2e8f0" stroke-width="1" />
+
+                <text x="72" y="62" font-size="24" font-weight="900" fill="#0f172a">Detailed Simulation Logic</text>
+                <text x="72" y="90" font-size="14" font-weight="650" fill="#64748b">A recruiter-friendly view of how the digital twin converts operating data into capacity decisions.</text>
+
+                <g class="detail-node">
+                  <rect x="72" y="142" width="195" height="128" rx="24" fill="white" stroke="#dbe4ef" />
+                  <circle cx="112" cy="184" r="20" fill="#eff6ff" />
+                  <text x="112" y="191" text-anchor="middle" font-size="18" font-weight="900" fill="#2563eb">1</text>
+                  <text x="142" y="178" font-size="17" font-weight="900" fill="#0f172a">Time Study</text>
+                  <text x="142" y="202" font-size="12" fill="#64748b">Cycle time observations</text>
+                  <text x="96" y="236" font-size="12" font-weight="700" fill="#475569">• Processing time</text>
+                  <text x="96" y="254" font-size="12" font-weight="700" fill="#475569">• Wait time</text>
+                  <text x="96" y="272" font-size="12" font-weight="700" fill="#475569">• Operator activity</text>
+                </g>
+
+                <g class="detail-node">
+                  <rect x="72" y="340" width="195" height="128" rx="24" fill="white" stroke="#dbe4ef" />
+                  <circle cx="112" cy="382" r="20" fill="#ecfdf5" />
+                  <text x="112" y="389" text-anchor="middle" font-size="18" font-weight="900" fill="#16a34a">2</text>
+                  <text x="142" y="376" font-size="17" font-weight="900" fill="#0f172a">Line Inputs</text>
+                  <text x="142" y="400" font-size="12" fill="#64748b">Production assumptions</text>
+                  <text x="96" y="434" font-size="12" font-weight="700" fill="#475569">• Demand level</text>
+                  <text x="96" y="452" font-size="12" font-weight="700" fill="#475569">• Staffing level</text>
+                  <text x="96" y="470" font-size="12" font-weight="700" fill="#475569">• Workstation sequence</text>
+                </g>
+
+                <line class="animated-flow-line" x1="278" y1="206" x2="378" y2="270" stroke="#64748b" stroke-width="3" marker-end="url(#detailArrow)" />
+                <line class="animated-flow-line" x1="278" y1="404" x2="378" y2="346" stroke="#64748b" stroke-width="3" marker-end="url(#detailArrow)" />
+
+                <g class="detail-node">
+                  <rect x="385" y="204" width="280" height="240" rx="30" fill="white" stroke="#dbe4ef" />
+                  <rect x="415" y="230" width="220" height="58" rx="18" fill="url(#detailBlue)" />
+                  <text x="525" y="265" text-anchor="middle" font-size="19" font-weight="900" fill="white">Digital Twin Engine</text>
+                  <text x="525" y="318" text-anchor="middle" font-size="13" font-weight="700" fill="#64748b">Runs the production line logic using workstation data, cycle times, labor allocation, and queue behavior.</text>
+
+                  <g transform="translate(421 352)">
+                    <rect x="0" y="0" width="38" height="38" rx="12" fill="#eff6ff" stroke="#bfdbfe" />
+                    <rect x="48" y="0" width="38" height="38" rx="12" fill="#eff6ff" stroke="#bfdbfe" />
+                    <rect x="96" y="0" width="38" height="38" rx="12" fill="#fff7ed" stroke="#fed7aa" />
+                    <rect x="144" y="0" width="38" height="38" rx="12" fill="#eff6ff" stroke="#bfdbfe" />
+                    <rect x="192" y="0" width="38" height="38" rx="12" fill="#ecfdf5" stroke="#bbf7d0" />
+                    <text x="19" y="24" text-anchor="middle" font-size="11" font-weight="900" fill="#1d4ed8">S1</text>
+                    <text x="67" y="24" text-anchor="middle" font-size="11" font-weight="900" fill="#1d4ed8">S2</text>
+                    <text x="115" y="24" text-anchor="middle" font-size="11" font-weight="900" fill="#c2410c">S3</text>
+                    <text x="163" y="24" text-anchor="middle" font-size="11" font-weight="900" fill="#1d4ed8">S4</text>
+                    <text x="211" y="24" text-anchor="middle" font-size="11" font-weight="900" fill="#166534">S5</text>
+                  </g>
+
+                  <circle class="signal-ring" cx="525" cy="390" r="78" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.4" />
+                </g>
+
+                <line class="animated-flow-line" x1="678" y1="324" x2="754" y2="324" stroke="#64748b" stroke-width="3" marker-end="url(#detailArrow)" />
+
+                <g class="detail-node">
+                  <rect x="768" y="138" width="210" height="124" rx="24" fill="white" stroke="#dbe4ef" />
+                  <circle cx="810" cy="180" r="20" fill="#fff7ed" />
+                  <text x="810" y="187" text-anchor="middle" font-size="18" font-weight="900" fill="#ea580c">3</text>
+                  <text x="840" y="174" font-size="17" font-weight="900" fill="#0f172a">Bottleneck Readout</text>
+                  <text x="840" y="198" font-size="12" fill="#64748b">Constraint visibility</text>
+                  <rect x="796" y="222" width="150" height="12" rx="99" fill="#fee2e2" />
+                  <rect x="796" y="222" width="130" height="12" rx="99" fill="url(#detailOrange)" />
+                  <text x="796" y="248" font-size="12" font-weight="800" fill="#9a3412">Assembly load: 92%</text>
+                </g>
+
+                <g class="detail-node">
+                  <rect x="768" y="286" width="210" height="124" rx="24" fill="white" stroke="#dbe4ef" />
+                  <circle cx="810" cy="328" r="20" fill="#eff6ff" />
+                  <text x="810" y="335" text-anchor="middle" font-size="18" font-weight="900" fill="#2563eb">4</text>
+                  <text x="840" y="322" font-size="17" font-weight="900" fill="#0f172a">Scenario Testing</text>
+                  <text x="840" y="346" font-size="12" fill="#64748b">Compare operating plans</text>
+                  <text x="796" y="382" font-size="12" font-weight="750" fill="#475569">Staffing • Demand • Balance</text>
+                </g>
+
+                <g class="detail-node">
+                  <rect x="768" y="434" width="210" height="124" rx="24" fill="white" stroke="#dbe4ef" />
+                  <circle cx="810" cy="476" r="20" fill="#ecfdf5" />
+                  <text x="810" y="483" text-anchor="middle" font-size="18" font-weight="900" fill="#16a34a">5</text>
+                  <text x="840" y="470" font-size="17" font-weight="900" fill="#0f172a">Recommendation</text>
+                  <text x="840" y="494" font-size="12" fill="#64748b">Improved line plan</text>
+                  <text x="796" y="530" font-size="12" font-weight="800" fill="#166534">+14% throughput • +10% labor efficiency</text>
+                </g>
+
+                <line class="animated-flow-line" x1="873" y1="263" x2="873" y2="280" stroke="#64748b" stroke-width="3" marker-end="url(#detailArrow)" />
+                <line class="animated-flow-line" x1="873" y1="411" x2="873" y2="428" stroke="#64748b" stroke-width="3" marker-end="url(#detailArrow)" />
+              </svg>
+            </div>
+            <div class="diagram-legend">
+              <span class="legend-pill"><span class="legend-dot"></span>Simulation Logic</span>
+              <span class="legend-pill"><span class="legend-dot orange"></span>Bottleneck Signal</span>
+              <span class="legend-pill"><span class="legend-dot green"></span>Improvement Output</span>
+              <span class="legend-pill"><span class="legend-dot cyan"></span>Live Data Flow</span>
+            </div>
+          </article>
+
+          <aside class="detail-side-stack reveal">
+            <div class="detail-side-card">
+              <h3>What this diagram proves</h3>
+              <p>It shows that the project was not just a visual dashboard. It followed a clear Industrial Engineering logic from measurement to simulation-based decision support.</p>
+            </div>
+            <div class="detail-side-card">
+              <h3>Model logic</h3>
+              <div class="detail-mini-list">
+                <div><span>1</span><p>Collect cycle-time and labor observation data.</p></div>
+                <div><span>2</span><p>Represent each workstation as a capacity point with queue behavior.</p></div>
+                <div><span>3</span><p>Run alternative staffing and demand scenarios.</p></div>
+                <div><span>4</span><p>Compare throughput, utilization, bottleneck load, and labor efficiency.</p></div>
+              </div>
+            </div>
+            <div class="detail-side-card">
+              <h3>Decision output</h3>
+              <p>The recommended scenario focused on reducing load at the constraint, balancing labor across high-demand steps, and improving total output without overstaffing the line.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="page-shell">
+        <div class="section-header reveal">
+          <div>
+            <div class="section-kicker">Methodology</div>
+            <h2>A structured improvement workflow from observation to scenario validation.</h2>
+          </div>
+        </div>
+
+        <div class="method-grid reveal">
+          <article class="content-card method-card" data-step="01">
+            <h3>Map the Line</h3>
+            <p>Defined each workstation, process sequence, queue point, labor role, and material handoff in the production flow.</p>
+          </article>
+          <article class="content-card method-card" data-step="02">
+            <h3>Measure Cycle Times</h3>
+            <p>Used time study observations to estimate processing time, variability, utilization, and idle time at key steps.</p>
+          </article>
+          <article class="content-card method-card" data-step="03">
+            <h3>Build Simulation</h3>
+            <p>Created a digital representation of the line to evaluate bottlenecks, workstation capacity, and labor allocation.</p>
+          </article>
+          <article class="content-card method-card" data-step="04">
+            <h3>Compare Scenarios</h3>
+            <p>Tested staffing and balancing alternatives to identify the best improvement path for higher output and efficiency.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="insights">
+      <div class="page-shell insights">
+        <article class="diagram-card reveal">
+          <div class="diagram-caption">
+            <h3>Bottleneck Heat Map</h3>
+            <span>Baseline vs. Improved State</span>
+          </div>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 820 470" role="img" aria-label="Bottleneck heat map diagram">
+              <rect width="820" height="470" fill="#f8fafc" />
+              <text x="52" y="58" font-size="22" font-weight="900" fill="#0f172a">Workstation Utilization</text>
+              <text x="52" y="84" font-size="13" font-weight="650" fill="#64748b">Higher utilization indicates stronger bottleneck risk.</text>
+
+              <g transform="translate(52 125)">
+                <text x="0" y="-18" font-size="14" font-weight="850" fill="#0f172a">Baseline</text>
+                <rect x="0" y="0" width="110" height="80" rx="18" fill="#bfdbfe" />
+                <rect x="125" y="0" width="110" height="80" rx="18" fill="#fb923c" />
+                <rect x="250" y="0" width="110" height="80" rx="18" fill="#fde68a" />
+                <rect x="375" y="0" width="110" height="80" rx="18" fill="#bfdbfe" />
+                <rect x="500" y="0" width="110" height="80" rx="18" fill="#dbeafe" />
+                <text x="55" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#1e3a8a">63%</text>
+                <text x="180" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#7c2d12">92%</text>
+                <text x="305" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#92400e">78%</text>
+                <text x="430" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#1e3a8a">70%</text>
+                <text x="555" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#1e3a8a">58%</text>
+                <text x="55" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Prep</text>
+                <text x="180" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Assembly</text>
+                <text x="305" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Testing</text>
+                <text x="430" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Packaging</text>
+                <text x="555" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Shipping</text>
+              </g>
+
+              <g transform="translate(52 300)">
+                <text x="0" y="-18" font-size="14" font-weight="850" fill="#0f172a">Improved Scenario</text>
+                <rect x="0" y="0" width="110" height="80" rx="18" fill="#dbeafe" />
+                <rect x="125" y="0" width="110" height="80" rx="18" fill="#fde68a" />
+                <rect x="250" y="0" width="110" height="80" rx="18" fill="#dbeafe" />
+                <rect x="375" y="0" width="110" height="80" rx="18" fill="#dbeafe" />
+                <rect x="500" y="0" width="110" height="80" rx="18" fill="#dcfce7" />
+                <text x="55" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#1e3a8a">60%</text>
+                <text x="180" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#92400e">82%</text>
+                <text x="305" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#1e3a8a">72%</text>
+                <text x="430" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#1e3a8a">66%</text>
+                <text x="555" y="45" text-anchor="middle" font-size="18" font-weight="900" fill="#166534">55%</text>
+                <text x="55" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Prep</text>
+                <text x="180" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Assembly</text>
+                <text x="305" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Testing</text>
+                <text x="430" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Packaging</text>
+                <text x="555" y="106" text-anchor="middle" font-size="12" font-weight="750" fill="#64748b">Shipping</text>
+              </g>
+            </svg>
+          </div>
+        </article>
+
+        <article class="content-card reveal">
+          <div class="section-kicker">Key Findings</div>
+          <h3>What the analysis showed</h3>
+          <div class="insight-stack">
+            <div class="insight-item">
+              <div class="insight-number">1</div>
+              <div>
+                <h4>Assembly was the main constraint.</h4>
+                <p>The highest utilization appeared at the assembly station, which limited total line output during peak demand.</p>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-number">2</div>
+              <div>
+                <h4>Small labor shifts had measurable impact.</h4>
+                <p>Reallocating operators across high-load steps improved flow without requiring a complete process redesign.</p>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-number">3</div>
+              <div>
+                <h4>Scenario testing reduced decision risk.</h4>
+                <p>The model helped compare staffing and production plans before changing the real line.</p>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-number">4</div>
+              <div>
+                <h4>Balanced capacity improved system output.</h4>
+                <p>The recommended scenario projected a 14% throughput increase and 10% labor efficiency gain.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="skills">
+      <div class="page-shell">
+        <div class="content-card reveal">
+          <div class="section-kicker">Tools & Industrial Engineering Methods</div>
+          <h3>Skills demonstrated through the project</h3>
+          <p>
+            This project connects production systems thinking with data-driven decision support. It highlights the ability to measure a process, model operating behavior, and recommend practical improvements using simulation results.
+          </p>
+          <div class="skills-strip">
+            <span class="skill-pill">Capacity Planning</span>
+            <span class="skill-pill">Discrete Event Simulation</span>
+            <span class="skill-pill">Digital Twin Modeling</span>
+            <span class="skill-pill">Time Studies</span>
+            <span class="skill-pill">Line Balancing</span>
+            <span class="skill-pill">Labor Utilization</span>
+            <span class="skill-pill">Bottleneck Analysis</span>
+            <span class="skill-pill">Scenario Modeling</span>
+            <span class="skill-pill">Throughput Improvement</span>
+            <span class="skill-pill">Process Optimization</span>
+          </div>
+        </div>
+
+        <div class="footer-cta reveal">
+          <div>
+            <h2>Built to show practical simulation thinking.</h2>
+            <p>
+              LineSim demonstrates how Industrial Engineering tools can turn operational data into better staffing decisions, smoother flow, and stronger production capacity planning.
+            </p>
+          </div>
+          <a class="button button-primary" href="#top">Back to Top ↑</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const revealElements = document.querySelectorAll('.reveal');
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.14 });
+
+    revealElements.forEach((el) => revealObserver.observe(el));
+
+    const counters = document.querySelectorAll('.counter');
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const counter = entry.target;
+        const target = Number(counter.dataset.target);
+        let current = 0;
+        const step = Math.max(1, Math.round(target / 28));
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          counter.textContent = `+${current}%`;
+        }, 28);
+        counterObserver.unobserve(counter);
+      });
+    }, { threshold: 0.6 });
+
+    counters.forEach((counter) => counterObserver.observe(counter));
+
+    const staffing = document.getElementById('staffing');
+    const demand = document.getElementById('demand');
+    const balance = document.getElementById('balance');
+
+    const staffingValue = document.getElementById('staffingValue');
+    const demandValue = document.getElementById('demandValue');
+    const balanceValue = document.getElementById('balanceValue');
+
+    const throughputResult = document.getElementById('throughputResult');
+    const laborResult = document.getElementById('laborResult');
+    const bottleneckResult = document.getElementById('bottleneckResult');
+
+    const stationBars = {
+      prep: [document.getElementById('barPrep'), document.getElementById('prepText')],
+      assembly: [document.getElementById('barAssembly'), document.getElementById('assemblyText')],
+      testing: [document.getElementById('barTesting'), document.getElementById('testingText')],
+      packaging: [document.getElementById('barPackaging'), document.getElementById('packagingText')]
+    };
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function updateScenario() {
+      const s = Number(staffing.value);
+      const d = Number(demand.value);
+      const b = Number(balance.value);
+
+      staffingValue.textContent = `${s} operators`;
+      demandValue.textContent = `${d}%`;
+      balanceValue.textContent = `${b}%`;
+
+      const throughput = clamp(Math.round((s - 4) * 3.1 + b * 0.7 - (d - 80) * 0.08), 2, 24);
+      const labor = clamp(Math.round((b * 0.45) + (s >= 6 ? 5 : 2) - Math.max(0, s - 7) * 2), 1, 16);
+      const bottleneck = clamp(Math.round(96 + (d - 80) * 0.21 - (s - 4) * 4.2 - b * 0.7), 58, 98);
+
+      throughputResult.textContent = `+${throughput}%`;
+      laborResult.textContent = `+${labor}%`;
+      bottleneckResult.textContent = `${bottleneck}%`;
+
+      const prep = clamp(Math.round(64 + (d - 80) * 0.09 - b * 0.12), 45, 88);
+      const assembly = bottleneck;
+      const testing = clamp(Math.round(76 + (d - 80) * 0.12 - b * 0.18 - (s - 6) * 1.2), 50, 92);
+      const packaging = clamp(Math.round(69 + (d - 80) * 0.08 - b * 0.15), 48, 86);
+
+      const values = { prep, assembly, testing, packaging };
+      Object.entries(values).forEach(([key, value]) => {
+        const [bar, text] = stationBars[key];
+        bar.style.setProperty('--value', `${value}%`);
+        text.textContent = `${value}%`;
+        if (value >= 85) bar.classList.add('warning');
+        else bar.classList.remove('warning');
+      });
+    }
+
+    [staffing, demand, balance].forEach((control) => control.addEventListener('input', updateScenario));
+    updateScenario();
+
+    const liveThroughput = document.getElementById('liveThroughput');
+    const liveLabor = document.getElementById('liveLabor');
+    const liveQueue = document.getElementById('liveQueue');
+    const eventText = document.getElementById('eventText');
+    const eventMessages = [
+      'Simulation update: assembly remains the current constraint.',
+      'WIP movement: flow is stable across downstream stations.',
+      'Scenario check: balanced labor allocation is active.',
+      'Capacity signal: throughput gain is holding steady.',
+      'Queue monitor: buffer levels remain controlled.'
+    ];
+    let eventIndex = 0;
+
+    setInterval(() => {
+      const throughput = 112 + Math.round(Math.random() * 12);
+      const laborLoad = 80 + Math.round(Math.random() * 8);
+      const sync = (99.3 + Math.random() * 0.6).toFixed(1);
+      const queueStates = ['Low', 'Stable', 'Low', 'Watch'];
+
+      if (liveThroughput) liveThroughput.textContent = `${throughput}/hr`;
+      if (liveLabor) liveLabor.textContent = `${laborLoad}%`;
+      if (liveQueue) liveQueue.textContent = queueStates[Math.floor(Math.random() * queueStates.length)];
+if (eventText) {
+        eventIndex = (eventIndex + 1) % eventMessages.length;
+        eventText.textContent = eventMessages[eventIndex];
+      }
+    }, 1700);
+  </script>
+</body>
+</html>
